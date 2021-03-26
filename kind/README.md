@@ -2,9 +2,7 @@
 
 ## Prerequisite
 
-- jq: https://stedolan.github.io/jq/download/
-- Kind: https://github.com/kubernetes-sigs/kind/releases
-- Docker desktop: https://www.docker.com/products/docker-desktop
+- Docker installed and running: https://www.docker.com/products/docker-desktop
 
 ## How to install/uninstall the cluster
 
@@ -15,9 +13,9 @@ The following bash script [kind-reg-ingress.sh](./kind-reg-ingress.sh) allows to
 
 Once the tools have been installed, you can download and move the script on your machine under a bin executable folder
 ```bash
-wget https://raw.githubusercontent.com/snowdrop/k8s-infra/master/kind/kind-reg-ingress.sh
+wget https://github.com/snowdrop/k8s-infra/blob/containerize-script/kind/kind-reg-ingress.sh
 chmod +x ./kind-reg-ingress.sh
-mv kind-reg-ingress.sh /usr/local/bin
+sudo mv kind-reg-ingress.sh /usr/local/bin
 ```
 
 Next, launch it:
@@ -37,6 +35,18 @@ Creating a Kind cluster with Kubernetes version : v1.20. and logging verbosity: 
 
 To verify if the ingress route is working, use the following example part of the [kind](https://kind.sigs.k8s.io/docs/user/ingress/#using-ingress) documentation
 like [this page](https://kind.sigs.k8s.io/docs/user/local-registry/#using-the-registry) too to tag/push a container image to the `localhost:5000` registry
+
+## Trick: To execute a command inside the container ...
+```bash
+docker rm -f kubetools
+docker run -it -d \
+   --net host --name kubetools \
+   -v ~/.kube:/root/.kube \
+   -v /var/run/docker.sock:/var/run/docker.sock \
+   quay.io/snowdrop/kubetools
+   
+docker exec -it kubetools <COMMAND>
+```
 
 ---
 **<a name="version-note">1</a>**: The kubernetes `default version` depends on the version of the kind tool installed (e.g. 1.20.2 corresponds to kind 0.10.0). See the release note to find such information like the list of the [supported images](https://github.com/kubernetes-sigs/kind/releases).
